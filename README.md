@@ -27,3 +27,8 @@ For installing the npm modules, run the command: npm install
 3. Running the server app
 
 For running the server, run the command: npm start
+This will build the server and run the build server.min.js file
+
+PS:
+* To only run the server, run the command: npm run start-server
+* To run the dev server, run the command: npm run start-dev-server

@@ -4,10 +4,13 @@
   "description": "Vote Counting Server",
   "main": "server.js",
   "scripts": {
-    "prestart": "gulp copy-init-data",
+    "prestart": "npm run build",
     "start": "gulp",
+    "start-server": "gulp run-server",
+    "start-dev-server": "gulp run-dev-server",
     "test": "gulp test",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "build": "gulp build"
   },
   "repository": {
     "type": "git",
@@ -33,9 +36,11 @@
     "grunt-cli": "^1.2.0",
     "gulp-concat": "^2.6.1",
     "gulp-env": "^0.4.0",
+    "gulp-eslint": "^3.0.1",
     "gulp-mocha": "^4.3.1",
     "gulp-uglify": "^2.1.2",
     "gulp-util": "^3.0.8",
+    "run-sequence": "^1.2.2",
     "should": "^11.2.1",
     "sinon": "^2.2.0",
     "supertest": "^3.0.0"

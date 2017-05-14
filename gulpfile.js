@@ -3,8 +3,10 @@
 var isProduction = false;
 
 var gulp        = require('gulp'),
+    runSequence = require('run-sequence'),
     gutil       = require('gulp-util'),
     env         = require('gulp-env'),
+    eslint      = require('gulp-eslint'),
     concat      = require('gulp-concat'),
     uglify      = require('gulp-uglify'),
     del         = require('del'),
@@ -23,40 +25,43 @@ var paths = {
     excludeScripts  : ['./node_modules/**']
 };
 
+var buildFileName = 'server.min.js';
+var distFileName = '';  // TODO: To be defined
+
 gulp.task('default', ['run-server']);
 
-
-// Running the server
+// Running the main server - needs to be build before hand
 gulp.task('run-server', function() {
     nodemon({
-        script: paths.serverScript,
+        script: paths.buildFolder + '/' + buildFileName,
         ext: 'js',
         env: {
-            PORT:8000
+            PORT: 8000
         },
         ignore: [
             './node_modules/**'
         ]
     })
     .on('restart', function() {
-        console.log('Restarting server');
+        console.log('Restarting main server');
     });
 });
 
-
-// Copy default candidates, voters, and candidate-votes files to folder that is used by the app
-gulp.task('copy-init-data', function() {
-    return gulp.src(paths.initData)
-        .pipe( gulp.dest(paths.workingData) );
-});
-
-
-// Running unit and Integration testing
-gulp.task('test', function() {
-    env({ vars: { ENV: 'Test' } });
-    gulp.src(paths.testScripts, { read: false })
-        .pipe( mocha({ reporter: 'nyan' }) )
-        .on('error', gutil.log);
+// Running the dev server
+gulp.task('run-dev-server', function() {
+    nodemon({
+        script: paths.serverScript,
+        ext: 'js',
+        env: {
+            PORT: 8000
+        },
+        ignore: [
+            './node_modules/**'
+        ]
+    })
+    .on('restart', function() {
+        console.log('Restarting dev server');
+    });
 });
 
 
@@ -66,21 +71,63 @@ gulp.task('watch', function() {
         paths.serverScript,
         paths.srcScripts,
         paths.testScripts
-    ], ['test']);
+    ], ['eslint', 'test']);
 });
+
+
+// Building project
+gulp.task('build', ['clean'], function(cb) {
+    runSequence([
+        'copy-init-data',
+        'test',
+        'minify'
+    ], cb);
+});
+
+
+// Copy default candidates, voters, and candidate-votes files to folder that is used by the app
+gulp.task('copy-init-data', function() {
+    // del([ paths.workingData ]);
+    return gulp.src(paths.initData)
+        .pipe( gulp.dest(paths.workingData) );
+});
+
+
+// Running unit and Integration testing
+gulp.task('test', function() {
+    env({ vars: { ENV: 'Test' } });
+    return gulp.src(paths.testScripts, { read: false })
+        .pipe( mocha({ reporter: 'nyan' }) )
+        .on('error', gutil.log);
+});
+
 
 // Removing build data
 gulp.task('clean', function() {
     return del([ paths.buildFolder ]);
 });
 
+
 // Minifying scripts
 gulp.task('minify', function() {
     return gulp.src([
-            paths.serverScript,
-            paths.srcScripts
+            paths.srcScripts,
+            './' + paths.serverScript
         ])
         .pipe(uglify())
-        .pipe(concat('server.min.js'))
-        .pipe(gulp.dest('build'));
+        // .pipe(concat('server.min.js'))
+        .pipe(concat())
+        .pipe(gulp.dest(paths.buildFolder));
+});
+
+// Linting javascript files
+gulp.task('eslint', function() {
+    return gulp.src([
+            './' + paths.serverScript,
+            paths.srcScripts,
+            '!./node_modules/**'
+        ])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
 });
