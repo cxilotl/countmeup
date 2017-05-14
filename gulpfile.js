@@ -1,5 +1,9 @@
 var gulp        = require('gulp'),
-    nodemon     = require('gulp-nodemon');
+    gutil       = require('gulp-util'),
+    env         = require('gulp-env'),
+    nodemon     = require('gulp-nodemon'),
+    mocha       = require('gulp-mocha'),
+    supertest   = require('supertest');
 
 var paths = {
     initData        : 'originaldata/*.json',
@@ -28,8 +32,16 @@ gulp.task('run-server', function() {
     });
 });
 
-// Copy default candidates, voters, and candidate-votes files to folder that is used bu the app
+// Copy default candidates, voters, and candidate-votes files to folder that is used by the app
 gulp.task('copy-init-data', function() {
     return gulp.src(paths.initData)
         .pipe( gulp.dest(paths.workingData) );
+});
+
+// Running unit and Integration testing
+gulp.task('test', function() {
+    env({ vars: { ENV: 'Test' } });
+    gulp.src(paths.testScripts, { read: false })
+        .pipe( mocha({ reporter: 'nyan' }) )
+        .on('error', gutil.log);
 });
