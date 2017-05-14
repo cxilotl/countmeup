@@ -1,0 +1,41 @@
+{
+  "name": "countmeup",
+  "version": "1.0.0",
+  "description": "Vote Counting Server",
+  "main": "server.js",
+  "scripts": {
+      "prestart": "gulp copy-init-data",
+      "start": "gulp",
+      "test": "gulp test",
+      "watch": "gulp watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cxilotl/countmeup.git"
+  },
+  "author": "Carlos Xilotl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cxilotl/countmeup/issues"
+  },
+  "homepage": "https://github.com/cxilotl/countmeup#readme",
+  "engines": {
+    "node": "6.9.4"
+  },
+
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1"
+  },
+  "devDependencies": {
+    "grunt-cli": "^1.2.0",
+    "gulp-env": "^0.4.0",
+    "gulp-mocha": "^4.3.1",
+    "gulp-util": "^3.0.8",
+    "should": "^11.2.1",
+    "sinon": "^2.2.0",
+    "supertest": "^3.0.0"
+  }
+}
