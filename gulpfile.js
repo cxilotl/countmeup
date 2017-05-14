@@ -1,8 +1,13 @@
 'use strict';
 
+var isProduction = false;
+
 var gulp        = require('gulp'),
     gutil       = require('gulp-util'),
     env         = require('gulp-env'),
+    concat      = require('gulp-concat'),
+    uglify      = require('gulp-uglify'),
+    del         = require('del'),
     nodemon     = require('gulp-nodemon'),
     mocha       = require('gulp-mocha'),
     supertest   = require('supertest');
@@ -11,8 +16,10 @@ var paths = {
     initData        : 'originaldata/*.json',
     workingData     : 'data/',
     serverScript    : 'server.js',
-    srsScripts      : 'src/**/*.js',
+    srcScripts      : 'src/**/*.js',
     testScripts     : 'test/**/*.js',
+    buildFolder     : 'build',
+    distFolder      : 'dist',
     excludeScripts  : ['./node_modules/**']
 };
 
@@ -57,7 +64,23 @@ gulp.task('test', function() {
 gulp.task('watch', function() {
     gulp.watch([
         paths.serverScript,
-        paths.srsScripts,
+        paths.srcScripts,
         paths.testScripts
     ], ['test']);
+});
+
+// Removing build data
+gulp.task('clean', function() {
+    return del([ paths.buildFolder ]);
+});
+
+// Minifying scripts
+gulp.task('minify', function() {
+    return gulp.src([
+            paths.serverScript,
+            paths.srcScripts
+        ])
+        .pipe(uglify())
+        .pipe(concat('server.min.js'))
+        .pipe(gulp.dest('build'));
 });
