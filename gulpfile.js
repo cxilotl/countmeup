@@ -15,14 +15,17 @@ var gulp        = require('gulp'),
     supertest   = require('supertest');
 
 var paths = {
-    initData        : 'originaldata/*.json',
-    workingData     : 'data/',
-    serverScript    : 'server.js',
-    srcScripts      : 'src/**/*.js',
-    testScripts     : 'test/**/*.js',
-    buildFolder     : 'build',
-    distFolder      : 'dist',
-    excludeScripts  : ['./node_modules/**']
+    initData            : 'originaldata/*.json',
+    workingData         : 'data/',
+    serverScript        : 'server.js',
+    srcScripts          : 'src/**/*.js',
+    helpersScripts      : 'helpers/*.js',
+    routesScripts       : 'routes/*.js',
+    controllersScripts  : 'controllers/*.js',
+    testScripts         : 'test/**/*.js',
+    buildFolder         : 'build',
+    distFolder          : 'dist',
+    excludeScripts      : ['./node_modules/**']
 };
 
 var buildFileName = 'server.min.js';
@@ -70,6 +73,9 @@ gulp.task('watch', function() {
     gulp.watch([
         paths.serverScript,
         paths.srcScripts,
+        paths.helpersScripts,
+        paths.routesScripts,
+        paths.controllersScripts,
         paths.testScripts
     ], ['eslint', 'test']);
 });
@@ -112,6 +118,9 @@ gulp.task('clean', function() {
 gulp.task('minify', function() {
     return gulp.src([
             paths.srcScripts,
+            paths.helpersScripts,
+            paths.routesScripts,
+            paths.controllersScripts,
             './' + paths.serverScript
         ])
         .pipe(uglify())
@@ -125,6 +134,9 @@ gulp.task('eslint', function() {
     return gulp.src([
             './' + paths.serverScript,
             paths.srcScripts,
+            paths.helpersScripts,
+            paths.routesScripts,
+            paths.controllersScripts,
             '!./node_modules/**'
         ])
         .pipe(eslint())
